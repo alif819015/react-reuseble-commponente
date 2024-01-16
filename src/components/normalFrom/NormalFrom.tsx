@@ -1,9 +1,23 @@
 import { useForm } from "react-hook-form";
 import cn from "../../utils/cn";
 import Button from "../ui/Button";
+import { z } from "zod";
+import {zodResolver} from '@hookform/resolvers/zod'
+
+const SignUpSchema = z.object({
+  name: z.string().min(1, {message: "Name is Requered"}),
+  email: z.string().email().min(1, {message: "Email is Requered"}),
+  password: z.string().min(8, "Your Password is to Short"),
+});
 
 const NormalFrom = () => {
-  const { register, handleSubmit, formState:{errors} } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver:zodResolver(SignUpSchema)
+  });
   const onSubmit = (data) => {
     console.log(data);
   };
@@ -30,8 +44,14 @@ const NormalFrom = () => {
           <label className="block" htmlFor="name">
             Name
           </label>
-          <input type="text" id="name" {...register("name", {required: true})} />
-          {errors.name && <span className="text-xs text-red-500">This field is required</span>}
+          <input
+            type="text"
+            id="name"
+            {...register("name", { required: true })}
+          />
+          {errors.name && (
+            <span className="text-xs text-red-500">{errors.name.message}</span>
+          )}
         </div>
         <div className="w-full max-w-md">
           <label className="block" htmlFor="email">
@@ -43,6 +63,9 @@ const NormalFrom = () => {
             id="email"
             {...register("email")}
           />
+          {errors.email && (
+            <span className="text-xs text-red-500">{errors.email.message}</span>
+          )}
         </div>
         <div className="w-full max-w-md">
           <label className="block" htmlFor="password">
@@ -52,8 +75,11 @@ const NormalFrom = () => {
             className="w-full"
             type="password"
             id="password"
-            {...register("password")}
+            {...register("password", {minLength:8})}
           />
+          {errors.password && (
+            <span className="text-xs text-red-500">{errors.password.message}</span>
+          )}
         </div>
         {/* <div className="w-full max-w-md">
           <label className="block" htmlFor="name">
